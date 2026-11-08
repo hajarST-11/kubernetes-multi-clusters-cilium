@@ -1,0 +1,8 @@
+# Clés privées et secrets : jamais dans Git
+users/
+pki/
+vault/tls/*.key
+*.key
+*.kubeconfig
+vault-init.txt
+.vault-token

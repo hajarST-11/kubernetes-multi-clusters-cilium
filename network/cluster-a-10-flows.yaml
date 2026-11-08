@@ -1,0 +1,51 @@
+# F1 (sortie) : frontend → backend:8080
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: frontend-to-backend, namespace: frontend}
+spec:
+  podSelector: {matchLabels: {app: frontend}}
+  policyTypes: [Egress]
+  egress:
+  - to:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: backend}}
+      podSelector: {matchLabels: {app: backend}}
+    ports: [{port: 8080, protocol: TCP}]
+---
+# F1 (entrée) : backend accepte seulement le frontend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: backend-from-frontend, namespace: backend}
+spec:
+  podSelector: {matchLabels: {app: backend}}
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: frontend}}
+      podSelector: {matchLabels: {app: frontend}}
+    ports: [{port: 8080, protocol: TCP}]
+---
+# F2 (sortie) : backend → db-a:5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: backend-to-db, namespace: backend}
+spec:
+  podSelector: {matchLabels: {app: backend}}
+  policyTypes: [Egress]
+  egress:
+  - to:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: data}}
+      podSelector: {matchLabels: {app: db-a}}
+    ports: [{port: 5432, protocol: TCP}]
+---
+# F2 (entrée) : db-a accepte seulement le backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: db-a-from-backend, namespace: data}
+spec:
+  podSelector: {matchLabels: {app: db-a}}
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: backend}}
+      podSelector: {matchLabels: {app: backend}}
+    ports: [{port: 5432, protocol: TCP}]

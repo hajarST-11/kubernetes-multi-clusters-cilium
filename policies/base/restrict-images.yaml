@@ -1,0 +1,24 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-images
+spec:
+  background: true
+  rules:
+  - name: approved-images-only
+    match:
+      any:
+      - resources: {kinds: [Pod]}
+    exclude:
+      any:
+      - resources:
+          namespaces: [kube-system, kube-public, kube-node-lease, kyverno, local-path-storage, external-secrets]
+    validate:
+      failureAction: Audit
+      message: "Image non approuvée. Autorisées : nginxinc/nginx-unprivileged, curlimages/curl, postgres."
+      pattern:
+        spec:
+          =(initContainers):
+          - image: "nginxinc/nginx-unprivileged:* | curlimages/curl:* | postgres:*"
+          containers:
+          - image: "nginxinc/nginx-unprivileged:* | curlimages/curl:* | postgres:*"

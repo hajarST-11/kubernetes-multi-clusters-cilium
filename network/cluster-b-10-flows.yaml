@@ -1,0 +1,40 @@
+# F4 (sortie) : ingest-api → db-b:5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: ingest-to-db, namespace: ingest}
+spec:
+  podSelector: {matchLabels: {app: ingest-api}}
+  policyTypes: [Egress]
+  egress:
+  - to:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: data}}
+      podSelector: {matchLabels: {app: db-b}}
+    ports: [{port: 5432, protocol: TCP}]
+---
+# F5 (sortie) : worker → db-b:5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: worker-to-db, namespace: processing}
+spec:
+  podSelector: {matchLabels: {app: worker}}
+  policyTypes: [Egress]
+  egress:
+  - to:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: data}}
+      podSelector: {matchLabels: {app: db-b}}
+    ports: [{port: 5432, protocol: TCP}]
+---
+# F4 + F5 (entrée) : db-b accepte seulement ingest-api et worker
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: db-b-from-ingest-and-worker, namespace: data}
+spec:
+  podSelector: {matchLabels: {app: db-b}}
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: ingest}}
+      podSelector: {matchLabels: {app: ingest-api}}
+    - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: processing}}
+      podSelector: {matchLabels: {app: worker}}
+    ports: [{port: 5432, protocol: TCP}]

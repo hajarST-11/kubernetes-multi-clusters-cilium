@@ -1,0 +1,51 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: developer
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["services", "configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "events"]
+  verbs: ["get", "list", "watch"]
+# Absents volontairement : secrets, pods/exec, roles, rolebindings, networkpolicies
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: dev-metier, namespace: frontend}
+subjects: [{kind: Group, name: equipe-metier, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: developer, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: dev-metier, namespace: backend}
+subjects: [{kind: Group, name: equipe-metier, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: developer, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: frontend}
+subjects: [{kind: Group, name: equipe-plateforme-a, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: backend}
+subjects: [{kind: Group, name: equipe-plateforme-a, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: data}
+subjects: [{kind: Group, name: equipe-plateforme-a, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: ingest}
+subjects: [{kind: Group, name: equipe-plateforme-a, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}

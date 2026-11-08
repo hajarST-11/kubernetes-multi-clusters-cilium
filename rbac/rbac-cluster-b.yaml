@@ -1,0 +1,35 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: analyst-readonly
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "events"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: data-analyst, namespace: processing}
+subjects: [{kind: Group, name: equipe-data, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: analyst-readonly, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: ingest}
+subjects: [{kind: Group, name: equipe-plateforme-b, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: processing}
+subjects: [{kind: Group, name: equipe-plateforme-b, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: platform-admin, namespace: data}
+subjects: [{kind: Group, name: equipe-plateforme-b, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {kind: ClusterRole, name: admin, apiGroup: rbac.authorization.k8s.io}

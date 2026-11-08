@@ -1,0 +1,7 @@
+resources:
+- disallow-latest-tag.yaml
+- require-resources.yaml
+- restrict-images.yaml
+- require-app-label.yaml
+- mutate-sa-token.yaml
+- generate-default-deny.yaml

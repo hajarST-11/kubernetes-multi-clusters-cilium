@@ -1,0 +1,14 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata: {name: backend-to-cluster-b-ingest, namespace: backend}
+spec:
+  endpointSelector:
+    matchLabels: {app: backend}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: ingest-api
+        k8s:io.kubernetes.pod.namespace: ingest
+        io.cilium.k8s.policy.cluster: cluster-b
+    toPorts:
+    - ports: [{port: "8080", protocol: TCP}]

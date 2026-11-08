@@ -1,0 +1,18 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disable-sa-token-automount
+spec:
+  rules:
+  - name: automount-false-by-default
+    match:
+      any:
+      - resources: {kinds: [Pod]}
+    exclude:
+      any:
+      - resources:
+          namespaces: [kube-system, kube-public, kube-node-lease, kyverno, local-path-storage, external-secrets]
+    mutate:
+      patchStrategicMerge:
+        spec:
+          +(automountServiceAccountToken): false
