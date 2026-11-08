@@ -14,7 +14,7 @@ spec:
       - resources:
           namespaces: [kube-system, kube-public, kube-node-lease, kyverno, local-path-storage, external-secrets]
     validate:
-      failureAction: Audit
+      failureAction: Enforce
       message: "Le label 'app' est obligatoire : il sert d'identité réseau (NetworkPolicy, Cilium)."
       pattern:
         metadata:

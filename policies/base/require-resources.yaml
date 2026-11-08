@@ -14,7 +14,7 @@ spec:
       - resources:
           namespaces: [kube-system, kube-public, kube-node-lease, kyverno, local-path-storage, external-secrets]
     validate:
-      failureAction: Audit
+      failureAction: Enforce
       message: "Chaque conteneur doit déclarer requests (cpu, memory) et limits (memory)."
       pattern:
         spec:

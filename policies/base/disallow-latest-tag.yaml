@@ -14,7 +14,7 @@ spec:
       - resources:
           namespaces: [kube-system, kube-public, kube-node-lease, kyverno, local-path-storage, external-secrets]
     validate:
-      failureAction: Audit
+      failureAction: Enforce
       message: "Le tag 'latest' (ou l'absence de tag) est interdit : utiliser une version figée."
       pattern:
         spec:
